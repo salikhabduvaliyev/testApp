@@ -1,0 +1,29 @@
+# Self-hosted SQLite database runtime files
+server/dono.db
+server/dono.db-shm
+server/dono.db-wal
+server/node_modules/
+
+# Node / Admin Web
+admin-web/node_modules/
+admin-web/dist/
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+admin-web/.env
+admin-web/.env.local
+
+# Android
+android-app/.gradle/
+android-app/.kotlin/
+android-app/build/
+android-app/app/build/
+android-app/.idea/
+android-app/local.properties
+*.apk
+*.iml
+.DS_Store
+Thumbs.db
+
+

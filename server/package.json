@@ -1,0 +1,15 @@
+{
+  "name": "dono-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "mammoth": "^1.13.0",
+    "unpdf": "^2.1.0",
+    "jszip": "^3.10.1"
+  }
+}
+
