@@ -27,9 +27,9 @@ class DonoApiClient(private val prefs: AppPreferences) {
     }
 
     private val client = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .writeTimeout(15, TimeUnit.SECONDS)
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
     private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
@@ -69,7 +69,7 @@ class DonoApiClient(private val prefs: AppPreferences) {
             throw e
         } catch (_: IOException) {
             throw DonoApiException(
-                "Serverga ulanib bo‘lmadi ($baseUrl). Telefon va kompyuter bitta Wi-Fi tarmog‘ida ekanini tekshiring yoki yuqoridagi sozlamadan manzilni tekshiring."
+                "Serverga ulanib bo‘lmadi. Internet aloqangizni tekshirib, qayta urinib ko‘ring."
             )
         }
     }

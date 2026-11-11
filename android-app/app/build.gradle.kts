@@ -1,5 +1,3 @@
-import java.net.Inet4Address
-import java.net.NetworkInterface
 import java.util.Properties
 
 plugins {
@@ -17,23 +15,9 @@ fun propOrEmpty(key: String): String {
   return (localProps.getProperty(key) ?: System.getenv(key) ?: "").trim()
 }
 
-fun detectLanServerUrl(): String {
+fun resolveServerUrl(): String {
   val explicit = propOrEmpty("SERVER_URL")
-  if (explicit.isNotBlank()) return explicit.trimEnd('/')
-  return try {
-    val addrs = NetworkInterface.getNetworkInterfaces().toList()
-      .filter { it.isUp && !it.isLoopback && !it.isVirtual }
-      .flatMap { it.inetAddresses.toList() }
-      .filterIsInstance<Inet4Address>()
-      .mapNotNull { it.hostAddress }
-      .filter { !it.startsWith("127.") && !it.startsWith("169.254.") }
-    val preferred = addrs.firstOrNull {
-      it.startsWith("192.168.") || it.startsWith("10.") || it.startsWith("172.")
-    } ?: addrs.firstOrNull()
-    if (preferred != null) "http://$preferred:8000" else "http://10.0.2.2:8000"
-  } catch (_: Exception) {
-    "http://10.0.2.2:8000"
-  }
+  return explicit.ifBlank { "http://apptest7777.pythonanywhere.com" }.trimEnd('/')
 }
 
 android {
@@ -43,12 +27,11 @@ android {
     applicationId = "uz.dono.app"
     minSdk = 24
     targetSdk = 36
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = 2
+    versionName = "1.1"
 
-    val lanUrl = detectLanServerUrl()
-    buildConfigField("String", "EMULATOR_SERVER_URL", "\"http://10.0.2.2:8000\"")
-    buildConfigField("String", "LAN_SERVER_URL", "\"$lanUrl\"")
+    val serverUrl = resolveServerUrl()
+    buildConfigField("String", "SERVER_URL", "\"$serverUrl\"")
   }
 
   buildTypes {

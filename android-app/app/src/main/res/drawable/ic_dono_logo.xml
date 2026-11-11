@@ -1,0 +1,93 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+
+    <!-- Rounded Square Blue Gradient Backdrop -->
+    <path android:pathData="M20,0 H60 a20,20 0 0 1 20,20 V60 a20,20 0 0 1 -20,20 H20 a20,20 0 0 1 -20,-20 V20 a20,20 0 0 1 20,-20 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="4"
+                android:startY="4"
+                android:endX="76"
+                android:endY="76">
+                <item android:color="#3B82F6" android:offset="0.0" />
+                <item android:color="#2563EB" android:offset="0.5" />
+                <item android:color="#1D4ED8" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Shadow -->
+    <path
+        android:fillColor="#300F172A"
+        android:pathData="M24.5,15.5 H50.5 a6,6 0 0 1 6,6 V59.5 a6,6 0 0 1 -6,6 H24.5 a6,6 0 0 1 -6,-6 V21.5 a6,6 0 0 1 6,-6 Z" />
+
+    <!-- Test Sheet Card -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M23,14 H49 a6,6 0 0 1 6,6 V58 a6,6 0 0 1 -6,6 H23 a6,6 0 0 1 -6,-6 V20 a6,6 0 0 1 6,-6 Z" />
+
+    <!-- Clipboard Top Clip -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M31,10 H41 a3,3 0 0 1 3,3 V13 a3,3 0 0 1 -3,3 H31 a3,3 0 0 1 -3,-3 V13 a3,3 0 0 1 3,-3 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31.9,11.6 H40.1 a1.4,1.4 0 0 1 1.4,1.4 V13 a1.4,1.4 0 0 1 -1.4,1.4 H31.9 a1.4,1.4 0 0 1 -1.4,-1.4 V13 a1.4,1.4 0 0 1 1.4,-1.4 Z" />
+
+    <!-- Row 1 (Correct Answer) -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M21.5,25 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M31.8,23.2 H46.2 a1.8,1.8 0 0 1 1.8,1.8 V25 a1.8,1.8 0 0 1 -1.8,1.8 H31.8 a1.8,1.8 0 0 1 -1.8,-1.8 V25 a1.8,1.8 0 0 1 1.8,-1.8 Z" />
+
+    <!-- Row 2 -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M21.5,35 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <path
+        android:fillColor="#CBD5E1"
+        android:pathData="M31.8,33.2 H45.2 a1.8,1.8 0 0 1 1.8,1.8 V35 a1.8,1.8 0 0 1 -1.8,1.8 H31.8 a1.8,1.8 0 0 1 -1.8,-1.8 V35 a1.8,1.8 0 0 1 1.8,-1.8 Z" />
+
+    <!-- Row 3 -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M21.5,45 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <path
+        android:fillColor="#CBD5E1"
+        android:pathData="M31.8,43.2 H41.2 a1.8,1.8 0 0 1 1.8,1.8 V45 a1.8,1.8 0 0 1 -1.8,1.8 H31.8 a1.8,1.8 0 0 1 -1.8,-1.8 V45 a1.8,1.8 0 0 1 1.8,-1.8 Z" />
+
+    <!-- Row 4 -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M21.5,55 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <path
+        android:fillColor="#CBD5E1"
+        android:pathData="M31.8,53.2 H37.2 a1.8,1.8 0 0 1 1.8,1.8 V55 a1.8,1.8 0 0 1 -1.8,1.8 H31.8 a1.8,1.8 0 0 1 -1.8,-1.8 V55 a1.8,1.8 0 0 1 1.8,-1.8 Z" />
+
+    <!-- Badge Outer Ring -->
+    <path
+        android:fillColor="#1D4ED8"
+        android:pathData="M39.5,52 a13.5,13.5 0 1,0 27,0 a13.5,13.5 0 1,0 -27,0" />
+
+    <!-- Badge Emerald Fill -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M42,52 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0" />
+
+    <!-- White Checkmark -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.0"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M47.6,52.2 L51.4,56.0 L58.6,48.2" />
+</vector>
+

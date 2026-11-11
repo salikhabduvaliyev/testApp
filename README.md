@@ -69,4 +69,4 @@ python manage.py runserver 0.0.0.0:8000
    - **URL:** `/static/`
    - **Directory:** `/home/<username>/testApp/staticfiles`
 6. Yuqoridagi yashil **Reload** tugmasini bosing. Saytingiz `https://<username>.pythonanywhere.com` da ishga tushadi!
-7. **Android APK ulash**: Ilova ichidagi **Server sozlamalari** tugmasidan `https://<username>.pythonanywhere.com` manzilini kiriting (yoki APK ni qayta yig‘ishda `android-app/local.properties` ga `SERVER_URL=https://<username>.pythonanywhere.com` yozing).
+7. **Android APK**: Ilova standart holatda `http://apptest7777.pythonanywhere.com` serveriga to‘g‘ridan-to‘g‘ri ulangan (boshqa manzil uchun `android-app/local.properties` da `SERVER_URL=...` berib qayta yig‘ish mumkin).

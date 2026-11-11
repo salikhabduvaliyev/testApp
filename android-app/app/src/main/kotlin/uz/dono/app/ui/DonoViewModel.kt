@@ -95,25 +95,6 @@ class DonoViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun saveServerUrl(url: String, onDone: () -> Unit = {}) {
-        prefs.saveServerUrl(url)
-        _uiState.update {
-            it.copy(
-                isLiveMode = repo.isLiveMode,
-                serverUrl = prefs.getServerUrl(),
-                errorMessage = null
-            )
-        }
-        if (_uiState.value.student != null) {
-            viewModelScope.launch {
-                val refreshed = repo.refreshSession()
-                _uiState.update { it.copy(student = refreshed) }
-                loadDashboardData()
-            }
-        }
-        onDone()
-    }
-
     fun login(fullName: String, phone: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isBusy = true, errorMessage = null) }

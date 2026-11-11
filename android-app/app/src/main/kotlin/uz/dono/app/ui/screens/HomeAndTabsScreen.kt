@@ -37,7 +37,6 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
@@ -105,13 +104,10 @@ fun MainTabsScreen(
     onSubjectClick: (SubjectItem) -> Unit,
     onLeaderboardScopeChange: (String) -> Unit,
     onAddFriend: (String, () -> Unit) -> Unit,
-    onSaveServerUrl: (String) -> Unit,
     onLogout: () -> Unit
 ) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     val currentTab = MainTab.entries[selectedTabIndex]
-
-    var showConfigDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -207,22 +203,10 @@ fun MainTabsScreen(
                 )
                 MainTab.PROFILE -> ProfileTabContent(
                     state = state,
-                    onOpenServerSettings = { showConfigDialog = true },
                     onLogout = onLogout
                 )
             }
         }
-    }
-
-    if (showConfigDialog) {
-        ServerConfigDialog(
-            initialUrl = state.serverUrl,
-            onDismiss = { showConfigDialog = false },
-            onSave = { url ->
-                showConfigDialog = false
-                onSaveServerUrl(url)
-            }
-        )
     }
 }
 
@@ -243,22 +227,6 @@ private fun HomeTabContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        if (!state.isLiveMode) {
-            item {
-                Surface(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Oflayn rejim: namunaviy fanlar ko‘rsatilmoqda. Jonli sinxronizatsiya uchun Profildan server manzilini kiriting.",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(12.dp)
-                    )
-                }
-            }
-        }
-
         // Daily Mission Card
         item {
             ElevatedCard(
@@ -753,7 +721,6 @@ private fun PodiumBar(place: Int, entry: LeaderboardEntry, heightDp: Int, color:
 @Composable
 private fun ProfileTabContent(
     state: DonoUiState,
-    onOpenServerSettings: () -> Unit,
     onLogout: () -> Unit
 ) {
     val student = state.student ?: return
@@ -822,25 +789,14 @@ private fun ProfileTabContent(
         }
 
         item {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedButton(
-                    onClick = onOpenServerSettings,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(Icons.Rounded.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Server")
-                }
-                OutlinedButton(
-                    onClick = onLogout,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(Icons.AutoMirrored.Rounded.ExitToApp, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Chiqish")
-                }
+            OutlinedButton(
+                onClick = onLogout,
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.AutoMirrored.Rounded.ExitToApp, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Chiqish")
             }
         }
 

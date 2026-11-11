@@ -1,12 +1,17 @@
 package uz.dono.app.data
 
 import android.content.Context
-import android.os.Build
 import uz.dono.app.BuildConfig
 import java.util.UUID
 
 class AppPreferences(context: Context) {
     private val prefs = context.getSharedPreferences("dono_prefs", Context.MODE_PRIVATE)
+
+    init {
+        if (prefs.contains("server_url")) {
+            prefs.edit().remove("server_url").apply()
+        }
+    }
 
     fun getOrCreateDeviceId(): String {
         val existing = prefs.getString("device_id", null)
@@ -16,39 +21,13 @@ class AppPreferences(context: Context) {
         return generated
     }
 
-    private fun isEmulator(): Boolean {
-        return Build.FINGERPRINT.startsWith("generic") ||
-            Build.FINGERPRINT.contains("emulator", ignoreCase = true) ||
-            Build.MODEL.contains("Emulator", ignoreCase = true) ||
-            Build.MODEL.contains("Android SDK built for", ignoreCase = true) ||
-            Build.MANUFACTURER.contains("Genymotion", ignoreCase = true) ||
-            Build.PRODUCT.contains("sdk_gphone", ignoreCase = true) ||
-            Build.HARDWARE.contains("ranchu", ignoreCase = true) ||
-            Build.HARDWARE.contains("goldfish", ignoreCase = true)
-    }
-
-    fun getDefaultServerUrl(): String {
-        return if (isEmulator()) BuildConfig.EMULATOR_SERVER_URL else BuildConfig.LAN_SERVER_URL
-    }
-
     fun getServerUrl(): String {
-        val override = prefs.getString("server_url", null)?.trim().orEmpty()
-        if (override.isNotEmpty()) return override.trimEnd('/')
-        return getDefaultServerUrl().trim().trimEnd('/')
+        return BuildConfig.SERVER_URL.trim().trimEnd('/')
     }
 
     fun isServerConfigured(): Boolean {
         val url = getServerUrl()
         return url.startsWith("http://") || url.startsWith("https://")
-    }
-
-    fun saveServerUrl(url: String) {
-        val clean = url.trim().trimEnd('/')
-        if (clean.isEmpty()) {
-            prefs.edit().remove("server_url").apply()
-        } else {
-            prefs.edit().putString("server_url", clean).apply()
-        }
     }
 
     fun saveStudentSession(student: StudentProfile) {

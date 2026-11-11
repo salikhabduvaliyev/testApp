@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import uz.dono.app.BuildConfig
 import uz.dono.app.data.AnswerSubmission
 import uz.dono.app.data.QuestionItem
 import uz.dono.app.data.StudentProfile
@@ -95,5 +96,10 @@ class DonoModelsTest {
 
         val ans = AnswerSubmission(parsed.id, "B", parsed.shuffledToken)
         assertEquals("tok123.sig456", ans.shuffledToken)
+    }
+
+    @Test
+    fun buildConfig_hasExpectedFixedServerUrl() {
+        assertEquals("http://apptest7777.pythonanywhere.com", BuildConfig.SERVER_URL)
     }
 }

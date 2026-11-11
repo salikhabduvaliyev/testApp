@@ -59,9 +59,6 @@ fun MainNavigation(viewModel: DonoViewModel = viewModel()) {
                             backStack.add(MainTabsRoute)
                         }
                     },
-                    onSaveServerUrl = { url ->
-                        viewModel.saveServerUrl(url)
-                    },
                     onDismissError = { viewModel.clearError() }
                 )
             }
@@ -77,7 +74,6 @@ fun MainNavigation(viewModel: DonoViewModel = viewModel()) {
                     },
                     onLeaderboardScopeChange = { scope -> viewModel.loadLeaderboard(scope) },
                     onAddFriend = { code, done -> viewModel.addFriendByCode(code, done) },
-                    onSaveServerUrl = { url -> viewModel.saveServerUrl(url) },
                     onLogout = {
                         viewModel.logout {
                             backStack.clear()
