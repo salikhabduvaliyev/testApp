@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+
+{% block title %}Fanlar va Test to‘plamlari — DONO Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Fanlar va Test to‘plamlari</h1>
+    <p class="page-subtitle">Fan yarating, yuklangan testlarni biriktiring — APKda foydalanuvchi fan va to‘plamni tanlab test yechadi</p>
+  </div>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-primary" onclick="openNewSubjectModal()">+ Yangi fan yaratish</button>
+  </div>
+</div>
+
+<div class="split-grid">
+  <!-- Chap panel: Fanlar -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">FANLAR ({{ subjects|length }})</h2>
+    </div>
+    <div style="padding:14px;">
+      {% if subjects %}
+        {% for s in subjects %}
+          <div class="subject-item {% if active_subject and s.id == active_subject.id %}active{% endif %}">
+            <a href="{% url 'subjects' %}?subject={{ s.id }}" style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+              <div class="subject-avatar" style="background:{{ s.color_hex }};">
+                {{ s.name|slice:":1"|upper }}
+              </div>
+              <div style="min-width:0;">
+                <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</div>
+                <div class="muted-text" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                  {{ s.quiz_count }} ta to‘plam{% if s.description %} · {{ s.description }}{% endif %}
+                </div>
+              </div>
+            </a>
+            <div style="display:flex;align-items:center;gap:2px;flex-shrink:0;">
+              <button
+                type="button"
+                class="icon-btn"
+                title="Tahrirlash"
+                data-id="{{ s.id }}"
+                data-name="{{ s.name }}"
+                data-desc="{{ s.description }}"
+                data-color="{{ s.color_hex }}"
+                data-icon="{{ s.icon_key }}"
+                onclick="openEditSubjectModal(this)"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </button>
+              <form method="post" action="{% url 'subjects' %}" style="display:inline;" onsubmit="return confirm('{{ s.name|escapejs }} fani va uning to‘plamlari o‘chirilsinmi?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_subject">
+                <input type="hidden" name="subject_id" value="{{ s.id }}">
+                <button type="submit" class="icon-btn danger" title="O‘chirish">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state" style="padding:28px 12px;">
+          Hozircha fanlar yo‘q. Yuqoridagi <strong>+ Yangi fan yaratish</strong> tugmasini bosing.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- O'ng panel: Tanlangan fan test to'plamlari -->
+  <div class="card">
+    {% if active_subject %}
+      <div class="card-header">
+        <div>
+          <div class="muted-text" style="text-transform:uppercase;font-weight:700;letter-spacing:0.04em;">{{ active_subject.name }}</div>
+          <h2 class="card-title">Test to‘plamlari ({{ subject_quizzes|length }})</h2>
+        </div>
+        <button type="button" class="btn btn-dark btn-sm" onclick="openNewQuizModal()">+ Test to‘plami qo‘shish</button>
+      </div>
+
+      <div style="padding:16px;">
+        {% if subject_quizzes %}
+          {% for q in subject_quizzes %}
+            <div class="quiz-card">
+              <div style="min-width:0;flex:1;">
+                <div style="font-weight:700;font-size:15px;">{{ q.obj.title }}</div>
+                {% if q.obj.description %}
+                  <div class="muted-text" style="margin-top:2px;">{{ q.obj.description }}</div>
+                {% endif %}
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+                  <span class="badge badge-slate">
+                    {% if q.obj.time_per_question_sec > 0 %}{{ q.obj.time_per_question_sec }} soniya/savol{% else %}Taymersiz{% endif %}
+                  </span>
+                  <span class="badge badge-blue">{{ q.question_count }} ta savol</span>
+                  <span class="badge badge-green">+{{ q.obj.points_per_correct }} ochko</span>
+                  {% for bk in q.obj.banks.all %}
+                    <span class="badge badge-violet">{{ bk.title }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                {% if q.first_bank_id %}
+                  <a href="{% url 'test_detail' q.first_bank_id %}" class="btn btn-outline btn-sm">Savollar ({{ q.question_count }})</a>
+                {% endif %}
+                <button
+                  type="button"
+                  class="icon-btn"
+                  title="Tahrirlash"
+                  data-id="{{ q.obj.id }}"
+                  data-title="{{ q.obj.title }}"
+                  data-desc="{{ q.obj.description }}"
+                  data-time="{{ q.obj.time_per_question_sec }}"
+                  data-points="{{ q.obj.points_per_correct }}"
+                  data-banks="{{ q.bank_ids_json }}"
+                  onclick="openEditQuizModal(this)"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <form method="post" action="{% url 'subjects' %}" style="display:inline;" onsubmit="return confirm('{{ q.obj.title|escapejs }} to‘plami o‘chirilsinmi?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="delete_quiz">
+                  <input type="hidden" name="quiz_id" value="{{ q.obj.id }}">
+                  <input type="hidden" name="subject_id" value="{{ active_subject.id }}">
+                  <button type="submit" class="icon-btn danger" title="O‘chirish">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            Bu fan ichida hali test to‘plami yo‘q. Yuklangan testlardan to‘plam yaratish uchun <strong>+ Test to‘plami qo‘shish</strong> tugmasini bosing.
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        Boshlash uchun avval chap tomondan yangi fan yarating, so‘ngra <a href="{% url 'tests' %}?upload=1" style="color:var(--primary);font-weight:600;">Testlar</a> bo‘limidan Word/PDF yuklang.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Fan Modali -->
+<div id="subjectModal" class="modal-backdrop">
+  <div class="modal-panel sm">
+    <div class="modal-header">
+      <h3 id="subjectModalTitle" class="modal-title">Yangi fan</h3>
+      <button type="button" class="icon-btn" onclick="closeModal('subjectModal')">&times;</button>
+    </div>
+
+    <form method="post" action="{% url 'subjects' %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save_subject">
+      <input type="hidden" name="subject_id" id="subIdInput" value="">
+      <input type="hidden" name="color_hex" id="subColorInput" value="#2563EB">
+
+      <div class="form-group">
+        <label class="form-label" for="subNameInput">Fan nomi *</label>
+        <input id="subNameInput" name="name" type="text" class="input" placeholder="Masalan: Ona tili" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="subDescInput">Tavsif (ixtiyoriy)</label>
+        <input id="subDescInput" name="description" type="text" class="input" placeholder="Qisqacha izoh">
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Rangi</label>
+          <div class="color-swatches" id="subColorSwatches">
+            {% for hex in color_options %}
+              <button type="button" class="color-swatch" data-hex="{{ hex }}" style="background:{{ hex }};" onclick="selectSubjectColor('{{ hex }}')"></button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="subIconInput">Belgisi</label>
+          <select id="subIconInput" name="icon_key" class="select">
+            {% for key, label in icon_options %}
+              <option value="{{ key }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('subjectModal')">Bekor qilish</button>
+        <button type="submit" class="btn btn-primary">Saqlash</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Test to'plami Modali -->
+{% if active_subject %}
+<div id="quizModal" class="modal-backdrop">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h3 id="quizModalTitle" class="modal-title">{{ active_subject.name }} — Yangi test to‘plami</h3>
+      <button type="button" class="icon-btn" onclick="closeModal('quizModal')">&times;</button>
+    </div>
+
+    <form method="post" action="{% url 'subjects' %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save_quiz">
+      <input type="hidden" name="quiz_id" id="quizIdInput" value="">
+      <input type="hidden" name="subject_id" value="{{ active_subject.id }}">
+
+      <div class="form-group">
+        <label class="form-label" for="quizTitleInput">To‘plam nomi *</label>
+        <input id="quizTitleInput" name="title" type="text" class="input" placeholder="Masalan: Ona tili 1-variant" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="quizDescInput">Izoh (ixtiyoriy)</label>
+        <input id="quizDescInput" name="description" type="text" class="input" placeholder="10, 25 yoki 50 ta savol rejimi">
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label" for="quizTimeInput">Har savolga vaqt (soniya, 0 = taymersiz)</label>
+          <input id="quizTimeInput" name="time_per_question_sec" type="number" min="0" value="20" class="input">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="quizPointsInput">To‘g‘ri javob uchun ochko</label>
+          <input id="quizPointsInput" name="points_per_correct" type="number" min="1" value="5" class="input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Testlar bazasidan biriktirish *</label>
+        {% if all_banks %}
+          <input type="text" class="input" style="margin-bottom:8px;" placeholder="Test nomini qidiring..." oninput="filterBankPicker(this.value)">
+          <div class="bank-picker-list" id="quizBanksPicker">
+            {% for b in all_banks %}
+              <label class="bank-picker-item" data-search="{{ b.title|lower }} {% if b.subject %}{{ b.subject.name|lower }}{% endif %}">
+                <input type="checkbox" name="bank_ids" value="{{ b.id }}">
+                <span style="flex:1;font-weight:600;">{{ b.title }}</span>
+                {% if b.subject %}
+                  <span class="badge badge-slate">{{ b.subject.name }}</span>
+                {% endif %}
+                <span class="badge badge-blue">{{ b.question_count }} ta</span>
+              </label>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="alert alert-error">
+            <span>Hali yuklangan testlar yo‘q. Avval <a href="{% url 'tests' %}?upload=1" style="text-decoration:underline;font-weight:700;">Testlar</a> sahifasidan fayl yuklang.</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('quizModal')">Bekor qilish</button>
+        <button type="submit" class="btn btn-primary">Saqlash</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function selectSubjectColor(hex) {
+  document.getElementById('subColorInput').value = hex;
+  document.querySelectorAll('#subColorSwatches .color-swatch').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.hex.toLowerCase() === hex.toLowerCase());
+  });
+}
+
+function openNewSubjectModal() {
+  document.getElementById('subjectModalTitle').textContent = 'Yangi fan yaratish';
+  document.getElementById('subIdInput').value = '';
+  document.getElementById('subNameInput').value = '';
+  document.getElementById('subDescInput').value = '';
+  document.getElementById('subIconInput').value = 'menu_book';
+  selectSubjectColor('#2563EB');
+  openModal('subjectModal');
+}
+
+function openEditSubjectModal(btn) {
+  document.getElementById('subjectModalTitle').textContent = 'Fanni tahrirlash';
+  document.getElementById('subIdInput').value = btn.dataset.id || '';
+  document.getElementById('subNameInput').value = btn.dataset.name || '';
+  document.getElementById('subDescInput').value = btn.dataset.desc || '';
+  document.getElementById('subIconInput').value = btn.dataset.icon || 'menu_book';
+  selectSubjectColor(btn.dataset.color || '#2563EB');
+  openModal('subjectModal');
+}
+
+function openNewQuizModal() {
+  document.getElementById('quizModalTitle').textContent = 'Yangi test to‘plami qo‘shish';
+  document.getElementById('quizIdInput').value = '';
+  document.getElementById('quizTitleInput').value = '';
+  document.getElementById('quizDescInput').value = '';
+  document.getElementById('quizTimeInput').value = '20';
+  document.getElementById('quizPointsInput').value = '5';
+  document.querySelectorAll('#quizBanksPicker input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+  });
+  openModal('quizModal');
+}
+
+function openEditQuizModal(btn) {
+  document.getElementById('quizModalTitle').textContent = 'Test to‘plamini tahrirlash';
+  document.getElementById('quizIdInput').value = btn.dataset.id || '';
+  document.getElementById('quizTitleInput').value = btn.dataset.title || '';
+  document.getElementById('quizDescInput').value = btn.dataset.desc || '';
+  document.getElementById('quizTimeInput').value = btn.dataset.time ?? '20';
+  document.getElementById('quizPointsInput').value = btn.dataset.points ?? '5';
+  let bankIds = [];
+  try {
+    bankIds = JSON.parse(btn.dataset.banks || '[]');
+  } catch {}
+  document.querySelectorAll('#quizBanksPicker input[type="checkbox"]').forEach(cb => {
+    cb.checked = bankIds.includes(cb.value);
+  });
+  openModal('quizModal');
+}
+
+function filterBankPicker(query) {
+  const q = (query || '').trim().toLowerCase();
+  document.querySelectorAll('#quizBanksPicker .bank-picker-item').forEach(el => {
+    el.style.display = !q || (el.dataset.search || '').includes(q) ? 'flex' : 'none';
+  });
+}
+</script>
+{% endblock %}

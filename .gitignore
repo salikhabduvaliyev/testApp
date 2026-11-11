@@ -1,18 +1,15 @@
-# Self-hosted SQLite database runtime files
-server/dono.db
-server/dono.db-shm
-server/dono.db-wal
-server/node_modules/
-
-# Node / Admin Web
-admin-web/node_modules/
-admin-web/dist/
-*.tsbuildinfo
+# Python / Django Fullstack
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+db.sqlite3
+db.sqlite3-*
+staticfiles/
 .env
-.env.local
-.env.*.local
-admin-web/.env
-admin-web/.env.local
+.env.*
+*.log
 
 # Android
 android-app/.gradle/
@@ -23,7 +20,7 @@ android-app/.idea/
 android-app/local.properties
 *.apk
 *.iml
+
+# OS / IDE
 .DS_Store
 Thumbs.db
-
-

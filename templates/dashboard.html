@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Boshqaruv paneli — DONO Admin{% endblock %}
+{% block autopoll %}1{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Boshqaruv paneli</h1>
+    <p class="page-subtitle">DONO platformasi holati (Django + SQLite · API kalitsiz)</p>
+  </div>
+
+  <div class="btn-group">
+    <span class="live-pill">
+      <span class="live-dot"></span>
+      Jonli (Django + SQLite)
+    </span>
+    <button type="button" class="btn btn-outline" onclick="window.location.reload()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <span>Yangilash</span>
+    </button>
+    <a href="{% url 'tests' %}?upload=1" class="btn btn-primary">+ Yangi test yuklash</a>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div>
+      <div class="kpi-label">O‘quvchilar</div>
+      <div class="kpi-value">{{ stats.total_students }}</div>
+      <div class="kpi-sub">Bugun faol: {{ stats.active_today }}</div>
+    </div>
+    <div class="kpi-icon badge-blue">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div>
+      <div class="kpi-label">Yechilgan testlar</div>
+      <div class="kpi-value">{{ stats.total_attempts }}</div>
+      <div class="kpi-sub">Jami APK urinishlari</div>
+    </div>
+    <div class="kpi-icon badge-green">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div>
+      <div class="kpi-label">O‘rtacha natija</div>
+      <div class="kpi-value">{{ stats.avg_score_percent }}%</div>
+      <div class="kpi-sub">Barcha urinishlar bo‘yicha</div>
+    </div>
+    <div class="kpi-icon badge-amber">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div>
+      <div class="kpi-label">Savollar bazasi</div>
+      <div class="kpi-value">{{ stats.total_questions }}</div>
+      <div class="kpi-sub">{{ stats.total_subjects }} ta fan · {{ stats.total_banks }} ta test</div>
+    </div>
+    <div class="kpi-icon badge-violet">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Oxirgi APK urinishlari
+    </h2>
+    <a href="{% url 'results' %}" class="btn btn-outline btn-sm">Barchasi &rarr;</a>
+  </div>
+
+  {% if recent_attempts %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>O‘quvchi</th>
+            <th>Fan</th>
+            <th>Test to‘plami</th>
+            <th>Natija</th>
+            <th>Ochko</th>
+            <th>Vaqt</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in recent_attempts %}
+            <tr>
+              <td>
+                <div style="font-weight:600;">{{ row.student.full_name }}</div>
+                <div class="muted-text mono">{{ row.student.phone }}</div>
+              </td>
+              <td>{{ row.subject.name }}</td>
+              <td>{{ row.quiz.title }}</td>
+              <td>
+                <span class="badge {% if row.score_percent >= 70 %}badge-green{% elif row.score_percent >= 40 %}badge-amber{% else %}badge-red{% endif %}">
+                  {{ row.correct_count }}/{{ row.total_questions }} ({{ row.score_percent|floatformat:0 }}%)
+                </span>
+              </td>
+              <td><span style="font-weight:700;color:var(--primary);">+{{ row.earned_points }}</span></td>
+              <td class="muted-text">{{ row.completed_at|date:"d.m.Y H:i" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      Hozircha test yechgan foydalanuvchilar yo‘q. Avval <a href="{% url 'subjects' %}" style="color:var(--primary);font-weight:600;">Fanlar</a> va <a href="{% url 'tests' %}?upload=1" style="color:var(--primary);font-weight:600;">Testlar</a> qo‘shing.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
