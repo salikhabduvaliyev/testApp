@@ -211,9 +211,15 @@ class DonoFullstackAndApiTests(TestCase):
         quiz_id = save_res.json()['quiz_id']
         self.assertEqual(Question.objects.filter(bank_id=bank_id).count(), 15)
 
-        # Verify all web admin pages render cleanly without template errors
+        # Verify all web admin pages render cleanly without template errors and disable browser auto-translate
+        login_page = Client().get('/login/')
+        self.assertContains(login_page, 'name="google" content="notranslate"')
+        self.assertContains(login_page, 'translate="no"')
+
         dash_page = self.client.get('/')
         self.assertEqual(dash_page.status_code, 200)
+        self.assertContains(dash_page, 'name="google" content="notranslate"')
+        self.assertContains(dash_page, 'translate="no"')
         subj_page = self.client.get(f'/subjects/?subject={sub.id}')
         self.assertContains(subj_page, 'Ona tili yangi')
         tests_page = self.client.get('/tests/')
